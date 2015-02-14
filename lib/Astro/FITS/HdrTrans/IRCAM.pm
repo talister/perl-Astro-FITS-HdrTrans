@@ -27,7 +27,7 @@ use base qw/ Astro::FITS::HdrTrans::UKIRTOld /;
 
 use vars qw/ $VERSION /;
 
-$VERSION = "1.50";
+$VERSION = "1.56";
 
 # For a constant mapping, there is no FITS header, just a generic
 # header that is constant.
@@ -375,6 +375,29 @@ sub from_Y_REFERENCE_PIXEL {
   my $self = shift;
   my $generic_headers = shift;
   return ( "CRPIX2", $generic_headers->{"Y_REFERENCE_PIXEL"} );
+}
+
+=item B<to_ROTATION>
+
+Returns fixed rotation values based on the UT date.
+
+=cut
+
+sub to_ROTATION {
+  my $self = shift;
+  my $FITS_headers = shift;
+  my $utdate = $self->to_UTDATE($FITS_headers);
+
+  if ($utdate < 19990901) {
+    return 1.5;
+  }
+
+  # TODO: determine correct sense for later rotations given on the
+  # IRCAM website http://www.jach.hawaii.edu/UKIRT/instruments/ircam/scale.html
+  # Sept 99: -89.04
+  # June 01: -88.84
+
+  return 0.0;
 }
 
 =back

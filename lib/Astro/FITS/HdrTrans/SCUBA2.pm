@@ -21,7 +21,7 @@ use base qw/ Astro::FITS::HdrTrans::JCMT /;
 
 use vars qw/ $VERSION /;
 
-$VERSION = "1.50";
+$VERSION = "1.56";
 
 # For a constant mapping, there is no FITS header, just a generic
 # header that is constant.
@@ -44,6 +44,7 @@ my %UNIT_MAP = (
                 POLARIMETER          => 'POL_CONN',
                 UTDATE               => "UTDATE",
                 TELESCOPE            => "TELESCOP",
+                AMBIENT_TEMPERATURE  => 'ATSTART',
                );
 
 # Values that are derived from the last subheader entry
@@ -160,13 +161,7 @@ sub to_DR_RECIPE {
   return $dr;
 }
 
-=cut
-
 =back
-
-=head1 REVISION
-
- $Id$
 
 =head1 SEE ALSO
 
@@ -178,7 +173,7 @@ Tim Jenness E<lt>t.jenness@jach.hawaii.eduE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2007-2009,2011 Science & Technology Facilities Council.
+Copyright (C) 2007-2009,2011,2013 Science & Technology Facilities Council.
 Copyright (C) 2003-2005 Particle Physics and Astronomy Research Council.
 All Rights Reserved.
 

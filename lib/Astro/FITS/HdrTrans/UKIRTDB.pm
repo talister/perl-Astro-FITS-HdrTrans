@@ -31,7 +31,7 @@ use base qw/ Astro::FITS::HdrTrans::JAC /;
 use vars qw/ $VERSION /;
 
 # Note that we use %02 not %03 because of historical reasons
-$VERSION = "1.50";
+$VERSION = "1.56";
 
 # for a constant mapping, there is no FITS header, just a generic
 # header that is constant
@@ -534,10 +534,10 @@ sub from_RA_BASE {
 
 =over 4
 
+=item B<_fix_dates>
+
 Handle the case where DATE_OBS and/or DATE_END are given, and convert
 them into DATE-OBS and/or DATE-END.
-
-=item B<_fix_dates>
 
 =cut
 
@@ -632,10 +632,6 @@ sub _parse_date {
 }
 
 =back
-
-=head1 REVISION
-
- $Id$
 
 =head1 SEE ALSO
 

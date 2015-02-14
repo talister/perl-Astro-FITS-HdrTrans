@@ -28,7 +28,7 @@ use base qw/ Astro::FITS::HdrTrans::UKIRTOld /;
 
 use vars qw/ $VERSION /;
 
-$VERSION = "1.50";
+$VERSION = "1.56";
 
 # for a constant mapping, there is no FITS header, just a generic
 # header that is constant
@@ -75,6 +75,9 @@ This method returns true if the INSTRUME header exists and is equal to
 'CGS4', and if the IDATE header exists, matches the regular
 expression '\d{8}', and is less than 20081115.
 
+It also handles the reverse (to FITS) case where the INSTRUMENT header
+replaces INSTRUME, and UTDATE replaces IDATE in the above tests.
+
 =cut
 
 sub can_translate {
@@ -83,21 +86,25 @@ sub can_translate {
 
   if ( exists $headers->{IDATE} &&
        defined $headers->{IDATE} &&
+       $headers->{IDATE} =~ /\d{8}/ &&
+       $headers->{IDATE} < 20081115 &&
        exists $headers->{INSTRUME} &&
        defined $headers->{INSTRUME} &&
        ! exists $headers->{RAJ2000} &&
-       $headers->{IDATE} =~ /\d{8}/ &&
-       $headers->{IDATE} < 20081115 &&
        uc( $headers->{INSTRUME} ) eq 'CGS4' ) {
     return 1;
   }
 
   # Need to handle the reverse case as well. This module can translate
-  # CGS4 headers older than 20081115.
-  if ( exists $headers->{INSTRUMENT} &&
-       uc( $headers->{INSTRUMENT} ) eq 'CGS4' &&
-       exists $headers->{UTDATE} &&
-       $headers->{UTDATE} < 20081115 ) {
+  # CGS4 headers older than 20081115.  Note that the translations mean
+  # different header names are tested.
+  if ( exists $headers->{UTDATE} &&
+       defined $headers->{UTDATE} &&
+       $headers->{UTDATE} =~ /\d{8}/ &&
+       $headers->{UTDATE} < 20081115 &&
+       exists $headers->{INSTRUMENT} &&
+       defined $headers->{INSTRUMENT} &&
+       uc( $headers->{INSTRUMENT} ) eq 'CGS4' ) {
     return 1;
   }
 
@@ -239,6 +246,36 @@ sub from_RA_TELESCOPE_OFFSET {
     }
   }
   return %return;
+}
+
+=item B<to_DETECTOR_READ_TYPE>
+
+Should be the "MODE" header but if this is missing we can look
+at INTTYPE instead.
+
+=cut
+
+sub to_DETECTOR_READ_TYPE {
+  my $self = shift;
+  my $FITS_headers = shift;
+
+  my %mode = (
+    CHOP        => 'CHOP',
+    'STARE+NDR' => 'ND_STARE',
+    STARE       => 'STARE',
+  );
+
+  if (exists $FITS_headers->{'MODE'}) {
+    return $FITS_headers->{'MODE'};
+  }
+  elsif (exists $FITS_headers->{'INTTYPE'}) {
+    my $inttype = $FITS_headers->{'INTTYPE'};
+    if (exists $mode{$inttype}) {
+      return $mode{$inttype};
+    }
+  }
+
+  return undef;
 }
 
 =item B<to_SAMPLING>

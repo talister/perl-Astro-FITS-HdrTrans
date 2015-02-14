@@ -26,19 +26,20 @@ use Module::Build;
 my $build = Module::Build->new
   (
    module_name => 'Astro::FITS::HdrTrans',
-   license  => 'gpl',
+   license  => 'gpl2',
    dist_abstract => 'Translate FITS headers to standardised form',
    dist_author => [
                    'Tim Jenness <t.jenness@jach.hawaii.edu>',
                    'Brad Cavanagh <b.cavanagh@jach.hawaii.edu>',
+                   'Malcolm J. Currie <mjc@star.rl.ac.uk>',
                   ],
-   dist_version => '1.54',
+   dist_version => '1.56',
    script_files => [ qw/
                          translatehdr
                        / ],
    meta_merge => {
                resources =>  {
-                              repository => "git://github.com/bradcavanagh/perl-Astro-FITS-HdrTrans.git",
+                              repository => "git://github.com/Starlink/perl-Astro-FITS-HdrTrans.git",
                              },
                 },
    recommends => {
@@ -57,6 +58,7 @@ my $build = Module::Build->new
                },
    build_requires => {
                       'Test::More' => 0,
+                      'Test::Number::Delta' => 0,
                       'Time::Piece' => 0,
                      },
    configure_requires => {
